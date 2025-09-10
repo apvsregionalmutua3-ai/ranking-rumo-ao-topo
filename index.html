@@ -14,7 +14,7 @@
             background-color: #111827; /* bg-gray-900 */
         }
         .text-glow {
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+            text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
         }
         .card {
             background-color: #1F2937; /* bg-gray-800 */
@@ -22,29 +22,30 @@
             transition: all 0.3s ease;
         }
         .progress-bar-wrapper {
-            padding: 4px;
-            background: #111827;
-            border-radius: 9999px;
             position: relative;
+            height: 24px;
         }
         .progress-bar-container {
             background-color: #374151; /* bg-gray-700 */
-            position: relative;
+            height: 16px;
+            position: absolute;
+            width: 100%;
+            top: 4px;
         }
         .progress-bar {
-            transition: width 0.5s ease-out, background 0.5s ease;
+            transition: width 1s ease-out, background 1s ease;
         }
-        .rocket {
+        .rocket-icon {
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%) translateX(50%);
+            top: 0;
             font-size: 24px;
-            transition: left 0.5s ease-out;
+            transition: left 1s ease-out;
+            transform: translateX(-50%);
             animation: bounce 1s infinite alternate;
         }
         @keyframes bounce {
-            from { transform: translateY(-55%) translateX(50%) rotate(0deg); }
-            to { transform: translateY(-45%) translateX(50%) rotate(0deg); }
+            from { transform: translateX(-50%) translateY(0px); }
+            to { transform: translateX(-50%) translateY(-3px); }
         }
         .table-header {
             background-color: #374151; /* bg-gray-700 */
@@ -58,31 +59,50 @@
         .table-row:hover {
             background-color: #374151; /* bg-gray-700 */
         }
-        .podium-item {
-            transition: all 0.3s ease-in-out;
+        .details-row {
+            display: none;
+        }
+        .details-row.open {
+            display: table-row;
+        }
+        /* Estilos do pódio */
+        .podium-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 1rem;
+        }
+        .podium-card {
+            width: 32%;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            transition: transform 0.3s ease;
         }
         .podium-1 {
-            transform: scale(1.1) translateY(-10px);
+            order: 2;
+            transform: translateY(-15px);
             border: 2px solid #FBBF24; /* amber-400 */
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+        }
+        .podium-2 { order: 1; }
+        .podium-3 { order: 3; }
+        .podium-trophy {
+            font-size: 2.5rem; /* 40px */
+            line-height: 1;
+        }
+        .podium-1 .podium-trophy {
+            font-size: 3.5rem; /* 56px */
         }
         .regional-tag {
             display: inline-block;
             padding: 2px 8px;
-            border-radius: 9999px;
+            border-radius: 12px;
             font-size: 0.7rem;
             font-weight: 600;
             margin-left: 8px;
-            text-transform: uppercase;
-        }
-        .details-row {
-            display: none;
-        }
-        .details-row.visible {
-            display: table-row;
-        }
-        .cursor-pointer {
-             cursor: pointer;
+            vertical-align: middle;
+            color: #fff;
         }
     </style>
 </head>
@@ -92,8 +112,8 @@
 
         <!-- Cabeçalho Principal -->
         <header class="text-center mb-8">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white text-glow mb-2">SETEMBRO #RAT 2025</h1>
-            <p id="last-updated" class="text-sm text-gray-400">A carregar dados...</p>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white text-glow mb-2">SETEMBRO #RAT 2025</h1>
+            <p id="last-updated" class="text-sm text-gray-400">Atualizado em: --/--/---- --:--</p>
         </header>
 
         <!-- Card de Meta Total -->
@@ -101,29 +121,28 @@
             <div class="flex flex-wrap justify-between items-center gap-4">
                 <div class="flex-grow">
                     <h2 class="text-xl font-semibold text-white">Progresso Total</h2>
-                    <p class="text-gray-400">🎯 META DE | <span id="meta-total" class="font-bold">--</span></p>
+                    <p class="text-gray-400">🎯 META DE | <span id="meta-total" class="font-bold">1103</span></p>
                 </div>
                 <div class="text-right">
-                    <p id="total-vendas" class="text-3xl font-bold text-white">--</p>
-                    <p id="faltam-vendas" class="text-red-400 font-semibold">FALTAM: --</p>
+                    <p id="total-vendas" class="text-3xl font-bold text-white">0</p>
+                    <p id="faltam-vendas" class="text-red-400 font-semibold">FALTAM: 1103</p>
                 </div>
             </div>
-             <div class="progress-bar-wrapper mt-4">
-                <div class="progress-bar-container w-full rounded-full h-4 overflow-visible">
-                    <div id="total-progress" class="progress-bar h-4 rounded-full" style="width: 0%;"></div>
-                    <div id="rocket" class="rocket" style="left: 0%;">🚀</div>
+            <div class="progress-bar-wrapper w-full mt-4">
+                <div class="progress-bar-container w-full rounded-full overflow-hidden">
+                    <div id="total-progress" class="progress-bar h-full rounded-full" style="width: 0%;"></div>
                 </div>
+                <span id="rocket" class="rocket-icon" style="left: 0%;">🚀</span>
             </div>
         </div>
-
+        
         <!-- Destaque TOP 3 Consultores -->
-        <div class="mb-10 text-center">
-            <h2 class="text-2xl font-bold text-white mb-6">🏆 TOP 3 CONSULTORES 🏆</h2>
-            <div id="podium-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-0 items-end justify-center">
+        <div class="card rounded-xl p-4 sm:p-6 mb-8 shadow-lg">
+            <h2 class="text-xl font-bold text-center mb-4 text-white">🏆 TOP 3 CONSULTORES 🏆</h2>
+            <div id="top3-podium" class="podium-container">
                 <!-- Pódio gerado via JS -->
             </div>
         </div>
-
 
         <!-- Container dos Rankings -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -187,7 +206,6 @@
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -198,234 +216,254 @@
             regionaisIndividual: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRHWgxdgqdfV-nqEnuakTqxmRd38LCa6skppzvM3yTjZ8ynHD1mDsYcQcRjHjJDFnDOD29ThEsZEmZS/pub?gid=452755695&single=true&output=csv',
             consultores: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRHWgxdgqdfV-nqEnuakTqxmRd38LCa6skppzvM3yTjZ8ynHD1mDsYcQcRjHjJDFnDOD29ThEsZEmZS/pub?gid=1115588777&single=true&output=csv'
         };
-
-        // Paleta de cores para as regionais
+        
+        // Cores para as etiquetas das regionais
         const regionalColors = {
             'Rangel': 'bg-red-500', 'Barcellos': 'bg-blue-500', 'Brunelli': 'bg-green-500',
             'Menezes': 'bg-yellow-500', 'Queiruja': 'bg-indigo-500', 'Reis': 'bg-purple-500',
             'Nunes': 'bg-pink-500', 'Figueiredo': 'bg-teal-500', 'Borges': 'bg-orange-500',
-            'Oliveira': 'bg-cyan-500', 'Abrantes': 'bg-lime-500', 'Silva': 'bg-emerald-500',
-            'Dias': 'bg-amber-500'
+            'Oliveira': 'bg-cyan-500', 'Abrantes': 'bg-lime-500', 'Silva': 'bg-gray-500',
+            'Dias': 'bg-emerald-500'
         };
 
-        // Função para buscar e processar dados de um CSV
-        async function fetchAndParseCSV(url) {
+        // Função para buscar e processar os dados CSV
+        async function fetchData(url) {
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`Erro na rede: ${response.statusText}`);
                 }
                 const text = await response.text();
-                const rows = text.split('\n').map(row => row.trim().split(','));
-                const headers = rows.shift();
+                // Simples parser de CSV
+                const rows = text.trim().split('\n').slice(1); // Ignora o cabeçalho
                 return rows.map(row => {
-                    let obj = {};
-                    headers.forEach((header, i) => {
-                        obj[header.trim()] = row[i] ? row[i].trim() : '';
-                    });
-                    return obj;
+                    // Trata aspas e vírgulas dentro dos campos
+                    const values = [];
+                    let current = '';
+                    let inQuotes = false;
+                    for (const char of row) {
+                        if (char === '"') {
+                            inQuotes = !inQuotes;
+                        } else if (char === ',' && !inQuotes) {
+                            values.push(current.trim());
+                            current = '';
+                        } else {
+                            current += char;
+                        }
+                    }
+                    values.push(current.trim());
+                    return values;
                 });
             } catch (error) {
-                console.error(`Erro ao buscar dados de ${url}:`, error);
-                return []; // Retorna array vazio em caso de erro
+                console.error(`Falha ao buscar dados de ${url}:`, error);
+                return []; // Retorna um array vazio em caso de erro
             }
         }
 
+        // Função para obter medalha ou posição
         function getMedal(position) {
-            position = parseInt(position);
-            if (position === 1) return '🥇';
-            if (position === 2) return '🥈';
-            if (position === 3) return '🥉';
+            const posNum = parseInt(position, 10);
+            if (posNum === 1) return '🥇';
+            if (posNum === 2) return '🥈';
+            if (posNum === 3) return '🥉';
             return position;
         }
 
-        function toggleDetails(regionalNome) {
-            const detailsRow = document.getElementById(`details-${regionalNome}`);
-            if (detailsRow) {
-                detailsRow.classList.toggle('visible');
+        // Função principal para popular todas as tabelas
+        async function populateAllTables() {
+            const [
+                dataRegionaisEquipe,
+                dataRegionaisIndividual,
+                dataConsultores
+            ] = await Promise.all([
+                fetchData(sheetUrls.regionaisEquipe),
+                fetchData(sheetUrls.regionaisIndividual),
+                fetchData(sheetUrls.consultores)
+            ]);
+
+            const allConsultores = dataConsultores.map(row => ({
+                pos: row[0],
+                nome: row[1],
+                vendas: parseInt(row[2], 10) || 0,
+                regional: row[3]
+            }));
+
+            updateTotalProgress(dataRegionaisEquipe);
+            populateRegionaisEquipe(dataRegionaisEquipe, allConsultores);
+            populateRegionaisIndividual(dataRegionaisIndividual);
+            populateConsultoresIndividual(allConsultores);
+            populateTop3Podium(allConsultores);
+            updateTimestamp();
+        }
+
+        function updateTotalProgress(data) {
+            const metaTotalElement = document.getElementById('meta-total');
+            const totalVendasElement = document.getElementById('total-vendas');
+            const faltamVendasElement = document.getElementById('faltam-vendas');
+            const progressBar = document.getElementById('total-progress');
+            const rocket = document.getElementById('rocket');
+
+            if (!data.length) return;
+
+            const totalVendas = data.reduce((sum, row) => sum + (parseInt(row[2], 10) || 0), 0);
+            const metaTotal = data.reduce((sum, row) => sum + (parseInt(row[3], 10) || 0), 0);
+            
+            metaTotalElement.textContent = metaTotal;
+            totalVendasElement.textContent = totalVendas;
+            faltamVendasElement.textContent = `FALTAM: ${Math.max(0, metaTotal - totalVendas)}`;
+
+            const percentage = metaTotal > 0 ? (totalVendas / metaTotal) * 100 : 0;
+            
+            progressBar.style.width = `${Math.min(percentage, 100)}%`;
+            rocket.style.left = `${Math.min(percentage, 100)}%`;
+            
+            if (percentage >= 80) {
+                progressBar.style.background = 'linear-gradient(90deg, #FBBF24, #F59E0B)'; // Dourado
+            } else if (percentage >= 50) {
+                progressBar.style.background = 'linear-gradient(90deg, #F97316, #FBBF24)'; // Laranja para Amarelo
+            } else {
+                progressBar.style.background = 'linear-gradient(90deg, #F97316, #EF4444)'; // Laranja para Vermelho
             }
         }
         
-        function populatePodium(data) {
-            const podiumContainer = document.getElementById('podium-container');
-            if (!podiumContainer || data.length < 3) return;
+        function populateTop3Podium(consultores) {
+            const podiumContainer = document.getElementById('top3-podium');
+            if (!podiumContainer || !consultores.length) return;
 
-            const top3 = data.slice(0, 3);
-            const podiumOrder = [top3[1], top3[0], top3[2]]; // 2º, 1º, 3º
+            const top3 = consultores.slice(0, 3);
+            podiumContainer.innerHTML = ''; // Limpa o container
 
-            podiumContainer.innerHTML = podiumOrder.map((consultor, index) => {
-                const isFirstPlace = consultor.Pos === '1';
-                const podiumClass = isFirstPlace ? 'podium-1' : '';
-                const orderClass = index === 0 ? 'md:order-1' : (index === 1 ? 'md:order-2' : 'md:order-3');
+            top3.forEach(consultor => {
+                const pos = parseInt(consultor.pos, 10);
+                const podiumCard = document.createElement('div');
+                podiumCard.className = `card podium-card podium-${pos}`;
                 
-                const initials = consultor.Nome.split(' ').map(n => n[0]).join('');
+                let trophy = '';
+                if (pos === 1) trophy = '🏆';
+                if (pos === 2) trophy = '🥈';
+                if (pos === 3) trophy = '🥉';
 
-                return `
-                    <div class="card rounded-xl p-4 shadow-lg podium-item ${podiumClass} ${orderClass}">
-                         <div class="relative">
-                            <div class="w-24 h-24 mx-auto rounded-full bg-gray-700 flex items-center justify-center mb-3 border-4 ${isFirstPlace ? 'border-amber-400' : 'border-gray-600'}">
-                               <span class="text-3xl font-bold">${initials}</span>
-                            </div>
-                            ${isFirstPlace ? '<span class="absolute top-0 right-1/2 translate-x-[80px] text-3xl">👑</span>' : ''}
-                        </div>
-                        <h4 class="text-lg font-bold text-white text-glow">${consultor.Nome}</h4>
-                        <p class="text-3xl font-extrabold text-cyan-400">${consultor.Vendas}</p>
-                        <p class="text-sm text-gray-400">vendas</p>
-                    </div>
+                podiumCard.innerHTML = `
+                    <div class="podium-trophy">${trophy}</div>
+                    <h4 class="font-bold text-lg text-white mt-2">${consultor.nome}</h4>
+                    <p class="text-2xl font-extrabold text-cyan-400">${consultor.vendas}</p>
+                    <p class="text-xs text-gray-400">vendas</p>
                 `;
-            }).join('');
+                podiumContainer.appendChild(podiumCard);
+            });
         }
 
 
-        async function populateAllTables() {
-            try {
-                // Busca todos os dados em paralelo
-                const [dataRegionaisEquipe, dataRegionaisIndividual, dataConsultores] = await Promise.all([
-                    fetchAndParseCSV(sheetUrls.regionaisEquipe),
-                    fetchAndParseCSV(sheetUrls.regionaisIndividual),
-                    fetchAndParseCSV(sheetUrls.consultores)
-                ]);
-
-                // Popula tabelas
-                populateRegionaisEquipe(dataRegionaisEquipe, dataConsultores);
-                populateSimpleTable('regionais-individual', dataRegionaisIndividual, ['Pos', 'Nome', 'Vendas']);
-                populateConsultoresTable(dataConsultores);
-                
-                // Popula pódio
-                populatePodium(dataConsultores);
-
-                // Atualiza cabeçalho e progresso
-                updateHeaderAndProgress(dataRegionaisEquipe);
-                updateTimestamp();
-
-            } catch (error) {
-                console.error("Erro ao popular as tabelas:", error);
-                document.getElementById('last-updated').textContent = "Erro ao carregar dados.";
-            }
-        }
-
-        function populateRegionaisEquipe(dataEquipe, dataConsultores) {
+        function populateRegionaisEquipe(data, allConsultores) {
             const tableBody = document.getElementById('regionais-equipe');
             if (!tableBody) return;
             tableBody.innerHTML = '';
+            
+            data.forEach((row, index) => {
+                const pos = row[0];
+                const nome = row[1];
+                const vendas = parseInt(row[2], 10) || 0;
+                const meta = parseInt(row[3], 10) || 1;
+                const percentage = Math.min((vendas / meta) * 100, 100);
+                const icon = percentage >= 50 ? '⚡️' : '⏳';
 
-            dataEquipe.forEach((item, index) => {
-                const row = document.createElement('tr');
                 const rowClass = index % 2 === 0 ? 'table-row-even' : 'table-row-odd';
-                row.className = `table-row ${rowClass} border-b border-gray-700 cursor-pointer`;
-                row.onclick = () => toggleDetails(item.Nome);
-
-                const vendas = parseInt(item.Vendas);
-                const meta = parseInt(item.Meta);
-                const percentage = meta > 0 ? Math.min((vendas / meta) * 100, 100) : 0;
-                
-                const statusIcon = percentage >= 50 ? '⚡️' : '⏳';
-
-                row.innerHTML = `
-                    <td class="px-4 py-3 font-medium">${getMedal(item.Pos)}</td>
-                    <td class="px-4 py-3 font-semibold">${item.Nome}</td>
-                    <td class="px-4 py-3">
+                const tableRow = document.createElement('tr');
+                tableRow.className = `table-row ${rowClass} border-b border-gray-700 cursor-pointer`;
+                tableRow.innerHTML = `
+                    <td class="px-4 py-3 font-medium">${getMedal(pos)}</td>
+                    <td class="px-4 py-3 font-semibold">${nome}</td>
+                    <td class="px-4 py-3 text-right">
                         <div class="flex items-center justify-end gap-2">
-                            <span class="font-mono">${vendas}/${meta}</span>
-                            <span class="w-4 h-4 text-center">${statusIcon}</span>
+                            <span class="font-mono text-xs">${vendas}/${meta}</span>
+                            <span>${icon}</span>
                         </div>
                     </td>
                 `;
-                tableBody.appendChild(row);
-                
-                // Linha de detalhes (inicialmente escondida)
+
                 const detailsRow = document.createElement('tr');
-                detailsRow.id = `details-${item.Nome}`;
                 detailsRow.className = 'details-row';
+                detailsRow.innerHTML = `<td colspan="3" class="p-0"></td>`;
                 
-                const consultoresDaRegional = dataConsultores.filter(c => c.Regional === item.Nome);
-                
-                let detailsContent = '<td colspan="3" class="p-3 bg-gray-900">';
-                if(consultoresDaRegional.length > 0) {
-                    detailsContent += `
-                        <table class="w-full text-xs bg-gray-900">
-                            <thead class="text-gray-400"><tr><th class="p-2">Pos.</th><th class="p-2">Consultor</th><th class="p-2 text-center">Vendas</th></tr></thead>
-                            <tbody>
-                                ${consultoresDaRegional.map(c => `<tr><td class="p-2">${c.Pos}º</td><td class="p-2">${c.Nome}</td><td class="p-2 text-center">${c.Vendas}</td></tr>`).join('')}
-                            </tbody>
-                        </table>
-                    `;
-                } else {
-                    detailsContent += '<p class="text-center text-gray-500 text-xs py-2">Nenhum consultor associado a esta regional.</p>';
-                }
-                detailsContent += '</td>';
-                detailsRow.innerHTML = detailsContent;
+                tableBody.appendChild(tableRow);
                 tableBody.appendChild(detailsRow);
+                
+                tableRow.addEventListener('click', () => {
+                    const isOpen = detailsRow.classList.toggle('open');
+                    
+                    document.querySelectorAll('.details-row.open').forEach(openRow => {
+                        if(openRow !== detailsRow) {
+                            openRow.classList.remove('open');
+                            openRow.querySelector('td').innerHTML = '';
+                        }
+                    });
+
+                    if (isOpen) {
+                        const consultoresDaRegional = allConsultores.filter(c => c.regional === nome);
+                        const detailsContent = document.createElement('div');
+                        detailsContent.className = 'bg-gray-900 p-4';
+                        
+                        if (consultoresDaRegional.length > 0) {
+                            let consultoresHtml = '<table class="w-full text-xs">';
+                            consultoresHtml += '<thead class="text-gray-400"><tr><th class="px-2 py-1">Pos.</th><th class="px-2 py-1">Consultor</th><th class="px-2 py-1 text-center">Vendas</th></tr></thead><tbody>';
+                            consultoresDaRegional.forEach(c => {
+                                consultoresHtml += `<tr class="border-b border-gray-800"><td class="px-2 py-1">${c.pos}º</td><td class="px-2 py-1">${c.nome}</td><td class="px-2 py-1 text-center">${c.vendas}</td></tr>`;
+                            });
+                            consultoresHtml += '</tbody></table>';
+                            detailsContent.innerHTML = consultoresHtml;
+                        } else {
+                            detailsContent.innerHTML = '<p class="text-center text-gray-500 text-xs">Nenhum consultor encontrado para esta regional.</p>';
+                        }
+                        detailsRow.querySelector('td').appendChild(detailsContent);
+                    } else {
+                         detailsRow.querySelector('td').innerHTML = '';
+                    }
+                });
             });
         }
-        
-         function populateConsultoresTable(data) {
+
+        function populateRegionaisIndividual(data) {
+            const tableBody = document.getElementById('regionais-individual');
+            if (!tableBody) return;
+            tableBody.innerHTML = '';
+            data.forEach((row, index) => {
+                const pos = row[0];
+                const nome = row[1];
+                const vendas = row[2];
+                
+                const rowClass = index % 2 === 0 ? 'table-row-even' : 'table-row-odd';
+                const tableRow = `
+                    <tr class="table-row ${rowClass} border-b border-gray-700">
+                        <td class="px-4 py-3 font-medium">${getMedal(pos)}</td>
+                        <td class="px-4 py-3 font-semibold">${nome}</td>
+                        <td class="px-4 py-3 text-center font-bold">${vendas}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += tableRow;
+            });
+        }
+
+        function populateConsultoresIndividual(data) {
             const tableBody = document.getElementById('consultores-individual');
             if (!tableBody) return;
             tableBody.innerHTML = '';
-
+            
             data.forEach((item, index) => {
-                const row = document.createElement('tr');
                 const rowClass = index % 2 === 0 ? 'table-row-even' : 'table-row-odd';
-                row.className = `table-row ${rowClass} border-b border-gray-700`;
-
-                const regionalTag = item.Regional ? 
-                    `<span class="regional-tag ${regionalColors[item.Regional] || 'bg-gray-500'}">${item.Regional}</span>` : '';
-
-                row.innerHTML = `
-                    <td class="px-4 py-3 font-medium">${getMedal(item.Pos)}</td>
-                    <td class="px-4 py-3 font-semibold flex items-center">${item.Nome} ${regionalTag}</td>
-                    <td class="px-4 py-3 text-center font-bold">${item.Vendas}</td>
+                const regionalTag = item.regional && item.regional.trim() !== ''
+                    ? `<span class="regional-tag ${regionalColors[item.regional] || 'bg-gray-600'}">${item.regional}</span>`
+                    : '';
+                
+                const tableRow = `
+                    <tr class="table-row ${rowClass} border-b border-gray-700">
+                        <td class="px-4 py-3 font-medium">${getMedal(item.pos)}</td>
+                        <td class="px-4 py-3 font-semibold">${item.nome} ${regionalTag}</td>
+                        <td class="px-4 py-3 text-center font-bold">${item.vendas}</td>
+                    </tr>
                 `;
-                tableBody.appendChild(row);
+                tableBody.innerHTML += tableRow;
             });
         }
-
-
-        function populateSimpleTable(tableId, data, headers) {
-            const tableBody = document.getElementById(tableId);
-            if (!tableBody) return;
-            tableBody.innerHTML = '';
-
-            data.forEach((item, index) => {
-                const row = document.createElement('tr');
-                const rowClass = index % 2 === 0 ? 'table-row-even' : 'table-row-odd';
-                row.className = `table-row ${rowClass} border-b border-gray-700`;
-
-                row.innerHTML = `
-                    <td class="px-4 py-3 font-medium">${getMedal(item[headers[0]])}</td>
-                    <td class="px-4 py-3 font-semibold">${item[headers[1]]}</td>
-                    <td class="px-4 py-3 text-center font-bold">${item[headers[2]]}</td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-        
-        function updateHeaderAndProgress(dataEquipe) {
-            const totalVendas = dataEquipe.reduce((sum, item) => sum + parseInt(item.Vendas || 0), 0);
-            const metaTotal = dataEquipe.reduce((sum, item) => sum + parseInt(item.Meta || 0), 0);
-            const faltam = metaTotal - totalVendas;
-            const percentage = metaTotal > 0 ? (totalVendas / metaTotal) * 100 : 0;
-
-            document.getElementById('total-vendas').textContent = totalVendas;
-            document.getElementById('meta-total').textContent = metaTotal;
-            document.getElementById('faltam-vendas').textContent = `FALTAM: ${faltam > 0 ? faltam : 0}`;
-            
-            const progressBar = document.getElementById('total-progress');
-            const rocket = document.getElementById('rocket');
-            
-            progressBar.style.width = `${percentage}%`;
-            rocket.style.left = `${percentage}%`;
-
-            if (percentage >= 80) {
-                 progressBar.style.background = 'linear-gradient(90deg, #FBBF24, #F59E0B)'; // Dourado
-            } else if (percentage >= 50) {
-                 progressBar.style.background = 'linear-gradient(90deg, #F97316, #FBBF24)'; // Laranja para Amarelo
-            } else {
-                 progressBar.style.background = 'linear-gradient(90deg, #F97316, #EF4444)'; // Laranja para Vermelho
-            }
-        }
-
 
         function updateTimestamp() {
             const now = new Date();
@@ -433,11 +471,8 @@
             const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
             document.getElementById('last-updated').textContent = `Atualizado em: ${date} ${time}`;
         }
-
-        // Popula as tabelas quando o DOM estiver pronto
-        document.addEventListener('DOMContentLoaded', () => {
-            populateAllTables();
-        });
+        
+        document.addEventListener('DOMContentLoaded', populateAllTables);
     </script>
 </body>
 </html>
